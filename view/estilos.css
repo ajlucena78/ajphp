@@ -1,0 +1,13 @@
+.cargando
+{
+	opacity: .4;
+	filter: alpha(opacity=40);
+}
+.invisible
+{
+	display: none;
+}
+.error
+{
+	color: red;
+}
