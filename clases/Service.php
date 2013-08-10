@@ -252,9 +252,15 @@
 							$sql .= ' and ' . $campo . ' like ';
 							$valor = '%' . $valor . '%';
 						}
+						elseif ($valor == 'null')
+						{
+							$sql .= ' and ' . $campo . ' is null';
+						}
 						else
+						{
 							$sql .= ' and ' . $campo . ' = ';
-						$sql .= "'" . str_replace("'", "\'", $valor) . "'";
+							$sql .= "'" . str_replace("'", "\'", $valor) . "'";
+						}
 					}
 				}
 			}
@@ -469,9 +475,18 @@
 		
 		public function findById($id)
 		{
-			$sql = "select * from " . get_class($this->model) . ' where true';
+			$clase = get_class($this->model);
+			$sql = 'select * from ' . $clase . ' model';
+			//hereda de otra clase padre?
+			$clasePadre = get_parent_class($this->model);
+			if ($clasePadre)
+			{
+				foreach ($this->model->get_pk() as $pk => $tipo)
+				$sql .= ' inner join ' . $clasePadre . ' padre on (padre.' . $pk . ' = \'' . $id . '\')';
+			}
+			$sql .= ' where true';
 			foreach ($this->model->get_pk() as $pk => $tipo)
-				$sql .= ' and ' . $pk . ' = \'' . $id . '\'';
+				$sql .= ' and model.' . $pk . ' = \'' . $id . '\'';
 			$consulta = new Consulta(self::$conexion);
 			if (!$consulta->ejecuta($sql))
 			{
@@ -480,10 +495,7 @@
 			}
 			$model = null;
 			if ($registro = $consulta->lee_registro())
-			{
-				$clase = get_class($this->model);
 				$model = new $clase($registro);
-			}
 			$consulta->libera();
 			return $model;
 		}
