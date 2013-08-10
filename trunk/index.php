@@ -11,6 +11,7 @@
 	elseif (!isset($_GET['action']) or !$_GET['action'])
 		$_GET['action'] = 'index';
 	include 'requires.php';
+	include 'conf.php';
 	session_start();
 	/*
 	//redirige a la versión móvil si es un navegador de estos
