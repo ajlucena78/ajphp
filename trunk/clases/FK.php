@@ -29,37 +29,37 @@
 			$this->index = $index;
 		}
 		
-		public function getModel()
+		public function model()
 		{
 			return $this->model;
 		}
 	
-		public function getLink_model()
+		public function link_model()
 		{
 			return $this->link_model;
 		}
 	
-		public function getLink_external_model()
+		public function link_external_model()
 		{
 			return $this->link_external_model;
 		}
 	
-		public function getRelation_type()
+		public function relation_type()
 		{
 			return $this->relation_type;
 		}
 	
-		public function getOrder()
+		public function order()
 		{
 			return $this->order;
 		}
 		
-		public function getModel_relational()
+		public function model_relational()
 		{
 			return $this->model_relational;
 		}
 		
-		public function getIndex()
+		public function index()
 		{
 			return $this->index;
 		}

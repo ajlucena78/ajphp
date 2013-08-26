@@ -61,8 +61,8 @@
 		{
 			foreach ($this->fk as $propiedad => $fk)
 			{
-				if (strtolower($fk->getRelation_type()) != OneToOne 
-						and strtolower($fk->getRelation_type()) != ManyToOne)
+				if (strtolower($fk->relation_type()) != OneToOne 
+						and strtolower($fk->relation_type()) != ManyToOne)
 					continue;
 				if (!$this->cargaRef($propiedad))
 					return false;
@@ -79,7 +79,7 @@
 			$elementos = Service::cargaRef($this, $propiedad, $limite, $inicio, $index, $soloId, $indexPK);
 			if ($elementos === false)
 				return false;
-			if ($this->fk[$propiedad]->getRelation_type() == ManyToOne)
+			if ($this->fk[$propiedad]->relation_type() == ManyToOne)
 			{
 				if (isset($elementos[0]))
 					$elementos = $elementos[0];
@@ -90,12 +90,12 @@
 			return true;
 		}
 		
-		public function get_propiedades()
+		public function propiedades()
 		{
 			return $this->propiedades;
 		}
 		
-		public function get_pk($pk = null)
+		public function pk($pk = null)
 		{
 			if (!$pk)
 				return $this->pk;
@@ -104,7 +104,7 @@
 			return null;
 		}
 		
-		public function get_fk($fk = null)
+		public function fk($fk = null)
 		{
 			if (!$fk)
 				return $this->fk;

@@ -31,7 +31,7 @@
 		}
 		else
 		{
-			$url = Config::hostApp() . $_SESSION['config']->getPathApp() . $action;
+			$url = Config::hostApp() . $_SESSION['config']->pathApp() . $action;
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -88,7 +88,7 @@
 		}
 		else
 		{
-			$url = Config::hostApp() . $_SESSION['config']->getPathApp() . link_action($action);
+			$url = Config::hostApp() . $_SESSION['config']->pathApp() . link_action($action);
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_HEADER, 0);
