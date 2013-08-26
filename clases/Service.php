@@ -13,7 +13,7 @@
 			{
 				self::$conexion = new Conexion();
 				if (!self::$conexion->conecta(DB_URL, DB_USERNAME, DB_PASSWORD))
-					$this->error = self::$conexion->get_error();
+					$this->error = self::$conexion->error();
 			}
 			require_once(APP_ROOT . '/clases/model/' . str_replace('Service', '', get_class($this)) . '.php');
 			$clase = str_replace('Service', '', get_class($this));
@@ -36,7 +36,7 @@
 			return self::$conexion->cierra_transaccion();
 		}
 		
-		public function getError()
+		public function error()
 		{
 			return $this->error;
 		}
@@ -48,11 +48,11 @@
 			$id = $model->$pk;
 			if (!$id)
 				return false;
-			$fk = $model->get_fk($propiedad);
+			$fk = $model->fk($propiedad);
 			if (!$fk)
 				return false;
-			if ($fk->getIndex() and !$index)
-				$index = $fk->getIndex();
+			if ($fk->index() and !$index)
+				$index = $fk->index();
 			if ($soloId and $index)
 			{
 				//TODO
@@ -71,38 +71,38 @@
 					$sql .= $index;
 				if ($indexPK)
 					$sql .= ', ' . $indexPK;
-				$sql .= ' from ' . $fk->getModel() . ' where ' . $fk->getLink_model() . ' = \'' . $id . '\'';
+				$sql .= ' from ' . $fk->model() . ' where ' . $fk->link_model() . ' = \'' . $id . '\'';
 			}
 			else
 			{
-				$sql = 'select distinct d1.* from ' . $fk->getModel() . ' d1';
-				if ($fk->getRelation_type() == ManyToMany)
+				$sql = 'select distinct d1.* from ' . $fk->model() . ' d1';
+				if ($fk->relation_type() == ManyToMany)
 				{
-					$sql .= ' join ' . $fk->getModel_relational() . ' d2 on (d2.' . $fk->getLink_model();
-					$sql .= ' = \'' . $id . '\' and d2.' . $fk->getLink_external_model() . ' = d1.' . $pk . ')';
+					$sql .= ' join ' . $fk->model_relational() . ' d2 on (d2.' . $fk->link_model();
+					$sql .= ' = \'' . $id . '\' and d2.' . $fk->link_external_model() . ' = d1.' . $pk . ')';
 				}
-				elseif ($fk->getRelation_type() == OneToMany)
+				elseif ($fk->relation_type() == OneToMany)
 				{
-					$sql .= ' where d1.' . $fk->getLink_model() . ' = \'' . $id . '\'';
+					$sql .= ' where d1.' . $fk->link_model() . ' = \'' . $id . '\'';
 				}
-				elseif ($fk->getRelation_type() == ManyToOne)
+				elseif ($fk->relation_type() == ManyToOne)
 				{
-					$modelExternalClass = $fk->getModel();
+					$modelExternalClass = $fk->model();
 					$modelExternal = new $modelExternalClass();
 					foreach ($modelExternal->pk as $pk2 => $tipo);
 					$modelExternal = null;
-					$sql .= ' join ' . get_class($model) . ' d2 on (d2.' . $fk->getLink_model() . ' = d1.' 
+					$sql .= ' join ' . get_class($model) . ' d2 on (d2.' . $fk->link_model() . ' = d1.' 
 							. $pk2 . ' and d2.' . $pk . ' = \'' . $id . '\')';
 				}
-				if ($fk->getOrder())
+				if ($fk->order())
 				{
 					$sql .= ' order by ';
-					if (!is_array($fk->getOrder()))
-						$sql .= 'd1.' . $fk->getOrder();
+					if (!is_array($fk->order()))
+						$sql .= 'd1.' . $fk->order();
 					else
 					{
 						$cont = 1;
-						foreach ($fk->getOrder() as $key)
+						foreach ($fk->order() as $key)
 						{
 							$sql .= 'd1.' . $key;
 							if ($cont++ < count($ref[7]))
@@ -143,7 +143,7 @@
 			}
 			else
 			{
-				$fk_model = $fk->getModel();
+				$fk_model = $fk->model();
 				require_once(APP_ROOT . '/clases/model/' . $fk_model . '.php');
 				while ($registro = $consulta->lee_registro())
 				{
@@ -190,7 +190,7 @@
 			$consulta = new Consulta(self::$conexion);
 			if (!$consulta->ejecuta($sql))
 			{
-				$this->error = $consulta->get_error();
+				$this->error = $consulta->error();
 				return false;
 			}
 			$registros = array();
@@ -215,13 +215,13 @@
 				$sql = 'select *';
 			$sql .= ' from ' . get_class($this->model);
 			$sql .= ' where true';
-			foreach ($model->get_propiedades() as $nombre)
+			foreach ($model->propiedades() as $nombre)
 			{
 				$campo = null;
-				if ($fk = $model->get_fk($nombre))
+				if ($fk = $model->fk($nombre))
 				{
-					if ($fk->getRelation_type() == ManyToOne)
-						$campo = $fk->getLink_model();
+					if ($fk->relation_type() == ManyToOne)
+						$campo = $fk->link_model();
 				}
 				else
 					$campo = $nombre;
@@ -230,17 +230,17 @@
 					$valor = $model->$nombre;
 					if (!is_null($valor) and !($valor === ''))
 					{
-						if ($fk and $fk->getRelation_type() == ManyToOne)
+						if ($fk and $fk->relation_type() == ManyToOne)
 						{
 							if ($valor == 'null')
 							{
-								$sql .= ' and ' . $fk->getLink_model() . ' is null';
+								$sql .= ' and ' . $fk->link_model() . ' is null';
 								continue;
 							}
 							if (!is_object($valor))
 								continue;
-							if (!in_array($campo, $model->get_propiedades()))
-								$metodo = $fk->getLink_external_model();
+							if (!in_array($campo, $model->propiedades()))
+								$metodo = $fk->link_external_model();
 							else
 								$metodo = $campo;
 							$valor = $valor->$metodo;
@@ -266,7 +266,7 @@
 			}
 			if (is_array($excludes) and count($excludes) > 0)
 			{
-				foreach ($model->get_pk() as $pk => $tipo);
+				foreach ($model->pk() as $pk => $tipo);
 				$sql .= ' and ' . $pk . ' not in (';
 				$cont = 1;
 				foreach ($excludes as $id)
@@ -280,7 +280,7 @@
 			}
 			if ($listaId)
 			{
-				foreach ($model->get_pk() as $pk => $tipo);
+				foreach ($model->pk() as $pk => $tipo);
 				$sql .= ' and ' . $pk . ' in (';
 				$cont = 0;
 				foreach ($listaId as $id)
@@ -309,7 +309,7 @@
 			$consulta = new Consulta(self::$conexion);
 			if (!$consulta->ejecuta($sql))
 			{
-				$this->error = $consulta->get_error();
+				$this->error = $consulta->error();
 				return false;
 			}
 			if ($total)
@@ -337,7 +337,7 @@
 			$consulta = new Consulta(self::$conexion);
 			if (!$consulta->ejecuta($sql))
 			{
-				$this->error = $consulta->get_error();
+				$this->error = $consulta->error();
 				return false;
 			}
 			if ($registro = $consulta->lee_registro())
@@ -356,17 +356,17 @@
 				$sql = 'insert into ' . get_class($this->model) . ' (';
 				$cont = 0;
 				$sql2 = '';
-				foreach ($model->get_propiedades() as $nombre)
+				foreach ($model->propiedades() as $nombre)
 				{
-					if ($model->get_pk($nombre) == 'auto')
+					if ($model->pk($nombre) == 'auto')
 						continue;
 					$valor = $model->$nombre();
-					if ($fk = $model->get_fk($nombre))
+					if ($fk = $model->fk($nombre))
 					{
-						if ($fk->getRelation_type() == ManyToOne or $fk->getRelation_type() == OneToOne)
+						if ($fk->relation_type() == ManyToOne or $fk->relation_type() == OneToOne)
 						{
 							if ($cont > 0) $sql .= ', ';
-							$sql .= $fk->getLink_model();
+							$sql .= $fk->link_model();
 						}
 					}
 					else
@@ -374,17 +374,17 @@
 						if ($cont > 0) $sql .= ', ';
 						$sql .= $nombre;
 					}
-					if ($fk = $model->get_fk($nombre))
+					if ($fk = $model->fk($nombre))
 					{
-						if (($fk->getRelation_type() == ManyToOne or $fk->getRelation_type() == OneToOne) 
+						if (($fk->relation_type() == ManyToOne or $fk->relation_type() == OneToOne) 
 								and $valor != null)
 						{
-							//$submetodo = $fk->getLink_external_model();
-							foreach ($valor->get_pk() as $pk2 => $tipo)
+							//$submetodo = $fk->link_external_model();
+							foreach ($valor->pk() as $pk2 => $tipo)
 							$valor = $valor->$pk2;
 						}
 					}
-					if (!$fk or ($fk->getRelation_type() == ManyToOne or $fk->getRelation_type() == OneToOne))
+					if (!$fk or ($fk->relation_type() == ManyToOne or $fk->relation_type() == OneToOne))
 					{
 						if ($cont++ > 0) $sql2 .= ', ';
 						if ($valor === null or $valor === 'null' or $valor === array())
@@ -404,17 +404,17 @@
 				//actualización
 				$sql = 'update ' . get_class($this->model) . ' set ';
 				$cont = 0;
-				foreach ($model->get_propiedades() as $nombre)
+				foreach ($model->propiedades() as $nombre)
 				{
-					if ($model->get_pk($nombre) == 'auto')
+					if ($model->pk($nombre) == 'auto')
 						continue;
 					$valor = $model->$nombre;
-					if ($fk = $model->get_fk($nombre))
+					if ($fk = $model->fk($nombre))
 					{
-						if ($fk->getRelation_type() == ManyToOne)
+						if ($fk->relation_type() == ManyToOne)
 						{
 							if ($cont > 0) $sql .= ', ';
-							$sql .= $fk->getRelation_type() . ' = ';
+							$sql .= $fk->relation_type() . ' = ';
 						}
 					}
 					else
@@ -422,15 +422,15 @@
 						if ($cont++ > 0) $sql .= ', ';
 						$sql .= $nombre . ' = ';	
 					}
-					if ($fk = $model->get_fk($nombre))
+					if ($fk = $model->fk($nombre))
 					{
-						if ($fk->getRelation_type() == ManyToOne and $valor != null)
+						if ($fk->relation_type() == ManyToOne and $valor != null)
 						{
-							$submetodo = $fk->getLink_external_model();
+							$submetodo = $fk->link_external_model();
 							$valor = $valor->$submetodo;
 						}
 					}
-					if (!$fk or $fk->getRelation_type() == ManyToOne)
+					if (!$fk or $fk->relation_type() == ManyToOne)
 					{
 						if ($valor === null or $valor === 'null' or $valor === array())
 							$sql .= 'null';
@@ -443,7 +443,7 @@
 					}
 				}
 				$sql .= ' where true';
-				foreach ($model->get_pk() as $pk => $tipo)
+				foreach ($model->pk() as $pk => $tipo)
 				{
 					$sql .= ' and ' . $pk . " = '" . $model->$pk . "'";
 				}
@@ -451,7 +451,7 @@
 			$res = self::$conexion->ejecuta($sql);
 			if ($res === false)
 			{
-				$this->error = self::$conexion->get_error();
+				$this->error = self::$conexion->error();
 				return false;
 			}
 			return $res;
@@ -464,7 +464,7 @@
 			$consulta = new Consulta(self::$conexion);
 			if (!$consulta->ejecuta($sql))
 			{
-				$this->error = $consulta->get_error();
+				$this->error = $consulta->error();
 				return false;
 			}
 			$id = null;
@@ -481,16 +481,16 @@
 			$clasePadre = get_parent_class($this->model);
 			if ($clasePadre)
 			{
-				foreach ($this->model->get_pk() as $pk => $tipo)
+				foreach ($this->model->pk() as $pk => $tipo)
 				$sql .= ' inner join ' . $clasePadre . ' padre on (padre.' . $pk . ' = \'' . $id . '\')';
 			}
 			$sql .= ' where true';
-			foreach ($this->model->get_pk() as $pk => $tipo)
+			foreach ($this->model->pk() as $pk => $tipo)
 				$sql .= ' and model.' . $pk . ' = \'' . $id . '\'';
 			$consulta = new Consulta(self::$conexion);
 			if (!$consulta->ejecuta($sql))
 			{
-				$this->error = $consulta->get_error();
+				$this->error = $consulta->error();
 				return false;
 			}
 			$model = null;
@@ -509,12 +509,12 @@
 				return $res;
 			}
 			$sql = "delete from " . get_class($this->model) . ' where true';
-			foreach ($this->model->get_pk() as $pk => $tipo)
+			foreach ($this->model->pk() as $pk => $tipo)
 				$sql .= ' and ' . $pk . ' = \'' . $id . '\'';
 			$consulta = new Consulta(self::$conexion);
 			if (!$consulta->ejecuta($sql))
 			{
-				$this->error = $consulta->get_error();
+				$this->error = $consulta->error();
 				return false;
 			}
 			return true;
@@ -522,29 +522,29 @@
 		
 		public function save_relation($model, $relacion)
 		{
-			if (!$fk = $model->get_fk($relacion))
+			if (!$fk = $model->fk($relacion))
 				return false;
-			foreach ($model->get_pk() as $pk => $tipo);
+			foreach ($model->pk() as $pk => $tipo);
 			$id = $model->$pk;
 			if (!$id)
 				return false;
 			if (!is_array($model->$relacion) or count($model->$relacion) == 0)
 				return true;
-			$metodo2 = $fk->getLink_model();
+			$metodo2 = $fk->link_model();
 			foreach ($model->$relacion as $elemento)
 			{
 				$id2 = $elemento->$metodo2();
 				if (!$id2)
 					return false;
-				if ($fk->getLink_model() == $pk)
-					$pk2 = $fk->getLink_external_model();
+				if ($fk->link_model() == $pk)
+					$pk2 = $fk->link_external_model();
 				else
-					$pk2 = $fk->getLink_model();
-				$sql = 'insert into ' . $fk->getModel_relational() . ' (' . $pk . ', ' . $pk2 . ')';
+					$pk2 = $fk->link_model();
+				$sql = 'insert into ' . $fk->model_relational() . ' (' . $pk . ', ' . $pk2 . ')';
 				$sql .= ' values (\'' . $id . '\', \'' . $id2 . '\')';
 				if (!$res = self::$conexion->ejecuta($sql))
 				{
-					$this->error = self::$conexion->get_error();
+					$this->error = self::$conexion->error();
 					return false;
 				}
 			}
@@ -553,27 +553,27 @@
 		
 		public function destroy_relation($model, $relacion)
 		{
-			if (!$fk = $model->get_fk($relacion))
+			if (!$fk = $model->fk($relacion))
 				return false;
-			foreach ($model->get_pk() as $pk => $tipo);
+			foreach ($model->pk() as $pk => $tipo);
 			$id = $model->$pk;
 			if (!$id)
 				return false;
-			$metodo2 = $fk->getLink_model();
+			$metodo2 = $fk->link_model();
 			foreach ($model->$relacion as $elemento)
 			{
 				$id2 = $elemento->$metodo2();
 				if (!$id2)
 					return false;
-				if ($fk->getLink_model() == $pk)
-					$pk2 = $fk->getLink_external_model();
+				if ($fk->link_model() == $pk)
+					$pk2 = $fk->link_external_model();
 				else
-					$pk2 = $fk->getLink_model();
-				$sql = 'delete from ' . $fk->getModel_relational() . ' where ' . $pk . ' = \'' . $id 
+					$pk2 = $fk->link_model();
+				$sql = 'delete from ' . $fk->model_relational() . ' where ' . $pk . ' = \'' . $id 
 						. '\' and ' . $pk2 . ' = \'' . $id2 . '\'';
 				if (!$res = self::$conexion->ejecuta($sql))
 				{
-					$this->error = self::$conexion->get_error();
+					$this->error = self::$conexion->error();
 					return false;
 				}
 			}
@@ -582,25 +582,25 @@
 		
 		public function exist_relation($model, $relacion)
 		{
-			if (!$fk = $model->get_fk($relacion))
+			if (!$fk = $model->fk($relacion))
 				return false;
-			foreach ($model->get_pk() as $pk => $tipo);
+			foreach ($model->pk() as $pk => $tipo);
 			$id = $model->$pk;
 			if (!$id)
 				return false;
 			if (!is_array($model->$relacion) or count($model->$relacion) == 0)
 				return true;
-			$metodo2 = $fk->getLink_model();
+			$metodo2 = $fk->link_model();
 			foreach ($model->$relacion as $elemento)
 			{
 				$id2 = $elemento->$metodo2();
 				if (!$id2)
 					return false;
-				if ($fk->getLink_model() == $pk)
-					$pk2 = $fk->getLink_external_model();
+				if ($fk->link_model() == $pk)
+					$pk2 = $fk->link_external_model();
 				else
-					$pk2 = $fk->getLink_model();
-				$sql = 'select * from ' . $fk->getModel_relational() . ' where ' . $pk . ' = \'' . $id 
+					$pk2 = $fk->link_model();
+				$sql = 'select * from ' . $fk->model_relational() . ' where ' . $pk . ' = \'' . $id 
 						. '\' and ' . $pk2 . ' = \'' . $id2 . '\'';
 				$consulta = new Consulta(self::$conexion);
 				if (!$consulta->ejecuta($sql))

@@ -66,7 +66,7 @@
 			return true;
 		}
 		
-		public function get_error()
+		public function error()
 		{
 			return $this->error;
 		}

@@ -17,7 +17,7 @@
 					, 'fecha_envio desc');
 			$this->fk['mensajes_recibidos'] = new FK('Mensaje', OneToMany, 'id_usuario_destino', null
 					, 'fecha_envio desc');
-			$this->fk['contactos'] = new FK('Usuario', ManyToMany, 'id_usuario', 'id_contacto', 'nombre'
-					, 'Contacto', 'id_usuario');
+			$this->fk['contactos'] = new FK('Usuario', ManyToMany, 'id_usuario', 'id_contacto', 'nombre', 'Contacto'
+					, 'id_usuario');
 		}
 	}

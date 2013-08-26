@@ -29,23 +29,23 @@
 		$_SESSION['key'] = 'amparo';
 	//TODO if (!isset($_SESSION['config']))
 		$_SESSION['config'] = new Config();
-	$db = $_SESSION['config']->getDb();
+	$db = $_SESSION['config']->db();
 	define('DB_URL', $db['url']);
 	define('DB_USERNAME', $db['username']);
 	define('DB_PASSWORD', $db['password']);
-	define('APP_NAME', $_SESSION['config']->getAppName());
+	define('APP_NAME', $_SESSION['config']->appName());
 	include 'functions.php';
-	if (!$actionPackage = $_SESSION['config']->getActionPackage($_GET['action']))
+	if (!$actionPackage = $_SESSION['config']->actionPackage($_GET['action']))
 		exit();
-	if (!$action = $_SESSION['config']->getAction($actionPackage['class']))
+	if (!$action = $_SESSION['config']->action($actionPackage['class']))
 		exit();
 	require_once('clases/action/' . $action['class'] . '.php');
 	foreach ($action['services'] as $service)
 		require_once('clases/service/' . ucfirst($service) . '.php');
 	$action = Action::cargaAction($action['class'], $action['services']);
-	if ($action->getError())
+	if ($action->error())
 	{
-		echo $action->getError();
+		echo $action->error();
 		exit();
 	}
 	$view = $action->$actionPackage['method']();
