@@ -1,8 +1,4 @@
-﻿<?php 
-	if (!isset($_SESSION['key']) or !isset($key) or $key != $_SESSION['key'])
-		exit();
-	echo '<?xml version="1.0" encoding="UTF-8"?>';
-?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <packages>
 	<package name="usuario">
     	<action name="index" method="index" class="usuarioAction">

@@ -11,37 +11,25 @@
 		return '?action=' . $action;
 	}
 	
-	function carga($action, $id = null, $params = null)
+	function carga($action, $id = null, $params = null, $funcion = null)
 	{
 		if (!$action)
 			return false;
 		if (!$id)
 			$id = $action;
 		$action = link_action($action, $params, true);
-		//TODO if (isset($_SESSION['javascript']) or $action == link_action('activa_javascript'))
-		if (true)
-		{
-?>
-			<script type="text/javascript">
-				<!--
-				carga('<?php echo Config::pathApp(); ?><?php echo $action; ?>', '<?php echo $id; ?>');
-				//-->
-			</script>
-<?php
-		}
+		if (!$funcion)
+			$funcion = 'null';
 		else
-		{
-			$url = Config::hostApp() . $_SESSION['config']->pathApp() . $action;
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_HEADER, 0);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
-			$html = curl_exec($ch);
-			curl_close($ch);
-			if ($html)
-				echo $html;
-		}
+			$funcion = "'$funcion'";
+?>
+		<script type="text/javascript">
+			<!--
+			carga('<?php echo PATH_APP; ?><?php echo $action; ?>', '<?php echo $id; ?>'
+					, <?php echo $funcion; ?>);
+			//-->
+		</script>
+<?php
 		return true;
 	}
 	
@@ -77,26 +65,9 @@
 			return false;
 		if (!$id)
 			$id = $action;
-		//TODO if (isset($_SESSION['javascript']) or $action == 'activa_javascript')
-		if (true)
-		{
 ?>
-			<script type="text/javascript">
-				carga_rotativa('<?php vlink($action); ?>', <?php echo $tiempo; ?>, '<?php echo $id; ?>');
-			</script>
+		<script type="text/javascript">
+			carga_rotativa('<?php vlink($action); ?>', <?php echo $tiempo; ?>, '<?php echo $id; ?>');
+		</script>
 <?php
-		}
-		else
-		{
-			$url = Config::hostApp() . $_SESSION['config']->pathApp() . link_action($action);
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_HEADER, 0);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
-			$html = curl_exec($ch);
-			curl_close($ch);
-			if ($html)
-				echo $html;
-		}
 	}
