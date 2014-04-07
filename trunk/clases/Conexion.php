@@ -23,7 +23,7 @@
 			}
 			catch (PDOException $e)
 			{
-				$this->error = 'Fallo en la conexión: ' . $e->getMessage();
+				$this->error = 'Fallo en la conexión ' . $dsn . ': ' . $e->getMessage();
 				return false;
 			}
 		}
@@ -64,6 +64,11 @@
 				return false;
 			}
 			return true;
+		}
+		
+		public function cancela_transaccion()
+		{
+			return $this->conexion->rollBack();
 		}
 		
 		public function error()
