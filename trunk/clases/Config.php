@@ -59,8 +59,8 @@
 			$this->actionPackages = array();
 			foreach ($xml->package as $package)
 			{
-				$atributos = $package->attributes();
-				$nombrePackage = '' . $atributos['name'];
+				$atributosPack = $package->attributes();
+				$nombrePackage = '' . $atributosPack['name'];
 				foreach ($package as $action)
 				{
 					$atributos = $action->attributes();
@@ -69,7 +69,13 @@
 					$this->actionPackages['' . $atributos['name']]['method'] = '' . $atributos['method'];
 					$this->actionPackages['' . $atributos['name']]['class'] = '' . $atributos['class'];
 					if (isset($atributos['frame']))
+					{
 						$this->actionPackages['' . $atributos['name']]['frame'] = '' . $atributos['frame'];
+					}
+					elseif (isset($atributosPack['frame']))
+					{
+						$this->actionPackages['' . $atributos['name']]['frame'] = '' . $atributosPack['frame'];
+					}
 					$this->actionPackages['' . $atributos['name']]['results'] = array();
 					foreach ($action as $result)
 					{

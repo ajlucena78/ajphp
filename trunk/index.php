@@ -14,6 +14,7 @@
 	include 'conf.php';
 	session_start();
 	//redirige a la versión móvil si es un navegador de estos
+	/*
 	if (!isset($_SESSION['navegador']))
 	{
 		require_once 'clases/util/Movil.php';
@@ -22,7 +23,9 @@
 		else
 			$_SESSION['navegador'] = 'desktop';
 	}
-	if (!isset($_SESSION['config']))
+	*/
+	$_SESSION['navegador'] = 'desktop';
+	//TODO if (!isset($_SESSION['config']))
 		$_SESSION['config'] = new Config();
 	//url relativa al proyecto
 	define('URL_APP', $_SESSION['config']->url_app());
@@ -65,12 +68,12 @@
 		$action->to_view();
 		if (file_exists(PATH_VIEW . $actionPackage['results'][$view]))
 		{
-			if (isset($actionPackage['frame']))
+			if (isset($actionPackage['frame']) and $actionPackage['frame'])
 			{
 				$frame = $_SESSION['config']->frame($actionPackage['frame']);
 				if (!isset($frame))
 				{
-					echo 'Error: No se encuentra en frame: ' . $actionPackage['frame'];
+					echo 'Error: No se encuentra el marco: ' . $actionPackage['frame'];
 					exit();
 				}
 				$FILE_VIEW = PATH_VIEW . $actionPackage['results'][$view];

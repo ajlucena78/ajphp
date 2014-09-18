@@ -5,10 +5,22 @@
 			$amp = '&';
 		else
 			$amp = '&amp;';
-		if ($params and is_array($params) and count($params) > 0)
-			foreach ($params as $nombre => $valor)
-				$action .= $amp . $nombre . '=' . $valor;
-		return '?action=' . $action;
+		if ($params and is_array($params))
+		{
+			$numParams = count($params);
+			if ($numParams > 0)
+			{
+				$action .= '?';
+				$cont = 1;
+				foreach ($params as $nombre => $valor)
+				{
+					$action .= $nombre . '=' . $valor;
+					if ($cont++ < $numParams)
+						$action .= $amp;
+				}
+			}
+		}
+		return URL_APP . $action;
 	}
 	
 	function carga($action, $id = null, $params = null, $funcion = null)
@@ -25,8 +37,7 @@
 ?>
 		<script type="text/javascript">
 			<!--
-			carga('<?php echo PATH_APP; ?><?php echo $action; ?>', '<?php echo $id; ?>'
-					, <?php echo $funcion; ?>);
+			carga('<?php echo $action; ?>', '<?php echo $id; ?>', <?php echo $funcion; ?>);
 			//-->
 		</script>
 <?php
@@ -44,7 +55,7 @@
 	{
 		$action = link_action($action, $params, true);
 		?><a href="<?php if ($pregunta) echo 'javascript:'; else echo $action; ?>"<?php if ($dest) { 
-				?> onclick="<?php if ($pregunta) echo 'if (pregunta(\'' . htmlentities($pregunta) . '\')) '; 
+				?> onclick="<?php if ($pregunta) echo 'if (pregunta(\'' . formato_html($pregunta) . '\')) '; 
 				?>carga('<?php echo $action; ?>', '<?php echo $dest; ?>', <?php 
 				if ($funcion) echo '\'' . str_replace('"', "\'", $funcion) 
 				. '\''; else echo 'null'; ?>, null<?php if ($ocultar) { ?>, true<?php } ?><?php 
@@ -70,4 +81,9 @@
 			carga_rotativa('<?php vlink($action); ?>', <?php echo $tiempo; ?>, '<?php echo $id; ?>');
 		</script>
 <?php
+	}
+	
+	function formato_html($texto)
+	{
+		return htmlentities($texto, ENT_XHTML, 'ISO-8859-1');
 	}
