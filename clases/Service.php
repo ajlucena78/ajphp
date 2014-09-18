@@ -34,7 +34,7 @@
 			return $res;
 		}
 		
-		protected function inicia_transaccion()
+		public function inicia_transaccion()
 		{
 			$res = self::$conexion->inicia_transaccion();
 			if ($res)
@@ -42,15 +42,17 @@
 			return $res;
 		}
 		
-		protected function cierra_transaccion()
+		public function cierra_transaccion()
 		{
 			$res = self::$conexion->cierra_transaccion();
 			if ($res)
 				$this->transaccion = false;
+			else
+				$this->cancela_transaccion();
 			return $res;
 		}
 		
-		protected function cancela_transaccion()
+		public function cancela_transaccion()
 		{
 			$res = self::$conexion->cancela_transaccion();
 			if ($res)
@@ -143,7 +145,7 @@
 						if ($modelAux->propiedades_clase($propiedad))
 						{
 							$nombreModel = get_class($modelAux);
-							if ($nombreModel == $fk->model())
+							if ($nombreModel == $fk->model() or $clasePadre == 'Model')
 							{
 								$sql = 'select distinct model.* from ' . $fk->model() . ' model';
 							}
@@ -514,7 +516,6 @@
 						if (($fk->relation_type() == ManyToOne or $fk->relation_type() == OneToOne) 
 								and $valor != null)
 						{
-							//$submetodo = $fk->link_external_model();
 							foreach ($valor->pk() as $pk2 => $tipo)
 							$valor = $valor->$pk2;
 						}
@@ -541,7 +542,7 @@
 				$cont = 0;
 				foreach ($model->propiedades_clase() as $nombre)
 				{
-					if ($model->pk($nombre) == 'auto')
+					if ($model->pk($nombre))
 						continue;
 					$fk = $model->fk($nombre);
 					if ($fk and ($fk->relation_type() == ManyToMany or $fk->relation_type() == OneToMany))
@@ -561,9 +562,10 @@
 					}
 					else
 					{
-						if ($cont++ > 0)
+						if ($cont > 0)
 							$sql .= ', ';
-						$sql .= $nombre . ' = ';	
+						$sql .= $nombre . ' = ';
+						$cont++;
 					}
 					if ($fk = $model->fk($nombre))
 					{
@@ -583,6 +585,7 @@
 							$sql .= 'false';
 						else
 							$sql .= "'" . $valor . "'";
+						$cont++;
 					}
 				}
 				$sql .= ' where true';
@@ -612,9 +615,13 @@
 				if ($clasePadreModel == 'Model')
 				{
 					$id = $this->last_insert_id();
-					if (!$id)
+					if ($id === false)
 					{
 						return false;
+					}
+					if ($id == 0)
+					{
+						return true;
 					}
 					return $id;
 				}
