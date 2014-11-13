@@ -3,7 +3,7 @@
 	{
 		public static function convierte_BBDD_a_web($fecha)
 		{
-			$tiempo = mktime() - strtotime($fecha);
+			$tiempo = time() - strtotime($fecha);
 			$res = 'Hace ';
 			if ($tiempo < 60)
 				$res .= 'menos de un minuto';
@@ -19,7 +19,7 @@
 				$res .= 'menos de un año';
 			else
 				$res .= 'mucho tiempo';
-			return htmlentities($res);
+			return formato_html($res);
 		}
 		
 		public static function fecha_hoy()
