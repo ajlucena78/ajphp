@@ -1,6 +1,6 @@
 Options FollowSymLinks
 RewriteEngine On
-RewriteBase /
+RewriteBase /comecologico.es/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?action=$1 [L,QSA]

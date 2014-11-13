@@ -1,2 +1,2 @@
 <?php
-	//define('CONSTANTE', 'valor');
+	//define('VARIABLE', 'VALOR');
