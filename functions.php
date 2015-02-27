@@ -65,6 +65,15 @@
 				if ($title){echo ' title="' . $title . '"';} ?>><?php
 	}
 	
+	function vlinkAjax($action, $dest = null, $params = null, $ocultar = false, $funcion = null
+			, $add_html = false, $ancla = null)
+	{
+		$action = link_action($action, $params, true);
+		$html = 'javascript:carga(\'' . $action . '\', \'' . $dest . '\', \'' . $funcion . '\'';
+		$html .= ', null, \'' . $ocultar . '\', \'' . $add_html . '\', \'' . $ancla . '\', true);';
+		return $html;
+	}
+	
 	function clink()
 	{
 		?></a><?php
@@ -86,4 +95,5 @@
 	function formato_html($texto)
 	{
 		return htmlentities($texto, ENT_XHTML, 'ISO-8859-1');
+		//return htmlentities($texto);
 	}

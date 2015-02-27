@@ -6,15 +6,18 @@
 	require_once 'clases/Service.php';
 	
 	if (isset($argv[1]) and $argv[1])
+	{
 		$_GET['action'] = $argv[1];
+	}
 	elseif (!isset($_GET['action']) or !$_GET['action'])
+	{
 		$_GET['action'] = 'index';
+	}
 	define('APP_ROOT', Config::app_root() . '/');
 	include 'requires.php';
 	include 'conf.php';
 	session_start();
 	//redirige a la versión móvil si es un navegador de estos
-	/*
 	if (!isset($_SESSION['navegador']))
 	{
 		require_once 'clases/util/Movil.php';
@@ -23,8 +26,6 @@
 		else
 			$_SESSION['navegador'] = 'desktop';
 	}
-	*/
-	$_SESSION['navegador'] = 'desktop';
 	//TODO if (!isset($_SESSION['config']))
 		$_SESSION['config'] = new Config();
 	//url relativa al proyecto
@@ -50,10 +51,14 @@
 		$_GET['permalink'] = $_GET['action'];
 		$_GET['action'] = 'index';
 		if (!$actionPackage = $_SESSION['config']->actionPackage($_GET['action']))
+		{
 			exit();
+		}
 	}
 	if (!$action = $_SESSION['config']->action($actionPackage['class']))
+	{
 		exit();
+	}
 	$action = Action::cargaAction($action['class'], $action['services']);
 	if ($action->error())
 	{
@@ -77,11 +82,11 @@
 					exit();
 				}
 				$FILE_VIEW = PATH_VIEW . $actionPackage['results'][$view];
-				include(PATH_VIEW . $frame);
+				include PATH_VIEW . $frame;
 			}
 			else
 			{
-				include(PATH_VIEW . $actionPackage['results'][$view]);
+				include PATH_VIEW . $actionPackage['results'][$view];
 			}
 		}
 		else
@@ -90,7 +95,9 @@
 			if (isset($_SESSION['get']) and is_array($_SESSION['get']) and count($_SESSION['get']) > 0)
 			{
 				foreach ($_SESSION['get'] as $var => $valor)
+				{
 					$action .= '&' . $var . '=' . $valor;
+				}
 				$_SESSION['get'] = null;
 			}
 			header('Location:' . $action);

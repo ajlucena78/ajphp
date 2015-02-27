@@ -29,7 +29,7 @@
 				$this->host_app = 'http://' . $_SERVER['HTTP_HOST'];
 			}
 			//carga de los ficheros de configuración y mapa de acciones
-			$xml = simplexml_load_file(APP_ROOT . 'config/context.xml');
+			$xml = $this->carga_xml('context.xml.php');
 			$this->app_name = strval(utf8_decode($xml->appname));
 			//conexión a la base de datos
 			$this->db_url = '' . $xml->db->url->attributes();
@@ -48,13 +48,13 @@
 			}
 			if ($_SESSION['navegador'] == 'movil')
 			{
-				$viewPath = '/movil';
-				$xml = simplexml_load_file(APP_ROOT . 'config/packages_movil.xml');
+				$viewPath = '';
+				$xml = $this->carga_xml('packages_movil.xml.php');
 			}
 			else
 			{
 				$viewPath = '';
-				$xml = simplexml_load_file(APP_ROOT . 'config/packages.xml');
+				$xml = $this->carga_xml('packages.xml.php');
 			}
 			$this->actionPackages = array();
 			foreach ($xml->package as $package)
@@ -85,9 +85,9 @@
 					}
 				}
 			}
-			if (file_exists(APP_ROOT . '/config/frames.xml'))
+			if (file_exists(APP_ROOT . '/config/frames.xml.php'))
 			{
-				$xml = simplexml_load_file(APP_ROOT . 'config/frames.xml');
+				$xml = $this->carga_xml('frames.xml.php');
 				$this->frames = array();
 				foreach ($xml->frame as $frame)
 				{
@@ -98,6 +98,17 @@
 			$this->path_view = $_SERVER['DOCUMENT_ROOT'] . $urlApp . '/view' . $viewPath . '/';
 			//url relativa al directorio de las vistas view
 			$this->url_view = $urlApp . '/view' . $viewPath . '/';
+		}
+		
+		private function carga_xml($archivo)
+		{
+			$XML_KEY = date('Ymdh');
+			ob_start();
+			include APP_ROOT . 'config/' . $archivo;
+			unset($XML_KEY);
+			$res = ob_get_contents();
+			ob_end_clean();
+			return simplexml_load_string($res);
 		}
 		
 		public function service($service)
