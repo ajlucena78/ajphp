@@ -48,6 +48,7 @@
 			}
 			if ($_SESSION['navegador'] == 'movil')
 			{
+				//$viewPath = '/movil';
 				$viewPath = '';
 				$xml = $this->carga_xml('packages_movil.xml.php');
 			}
