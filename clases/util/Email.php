@@ -14,7 +14,7 @@
 				  {
 					 //obtengo la terminacion del dominio
 					 $term_dom = substr(strrchr ($email, '.'),1);
-					 //compruebo que la terminación del dominio sea correcta
+					 //compruebo que la terminaciÃ³n del dominio sea correcta
 					 if (strlen($term_dom)>1 && strlen($term_dom)<5 && (!strstr($term_dom,"@")) )
 					 {
 						//compruebo que lo de antes del dominio sea correcto

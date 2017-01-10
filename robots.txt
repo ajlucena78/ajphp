@@ -1,0 +1,4 @@
+User-Agent: *
+Disallow: /clases/
+Disallow: /config/
+Disallow: /view/

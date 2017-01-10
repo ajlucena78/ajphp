@@ -1,5 +1,5 @@
 <?php
-	function link_action($action, $params = null, $sinFormato = false)
+	function link_action($action, $params = null, $sinFormato = false, $ruta = true)
 	{
 		if ($sinFormato)
 			$amp = '&';
@@ -20,7 +20,9 @@
 				}
 			}
 		}
-		return URL_APP . $action;
+		if ($ruta)
+			return URL_APP . $action;
+		return $action;
 	}
 	
 	function carga($action, $id = null, $params = null, $funcion = null)
@@ -94,6 +96,21 @@
 	
 	function formato_html($texto)
 	{
-		return htmlentities($texto, ENT_XHTML, 'ISO-8859-1');
-		//return htmlentities($texto);
+		return htmlentities($texto, ENT_XHTML);
+	}
+	
+	function formato_texto($html)
+	{
+		return html_entity_decode($html);
+	}
+	
+	function es_letra_o_numero($caracter)
+	{
+		if ($caracter == '/')
+			return false;
+		if (ord($caracter) >= 97 and ord($caracter) <= 122)
+			return true;
+		if (ord($caracter) >= 48 and ord($caracter) <= 57)
+			return true;
+		return false;
 	}

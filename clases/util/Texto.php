@@ -17,9 +17,13 @@
 						if (($i + $caracteres) > strlen($texto))
 							$i = strlen($texto) - $caracteres;
 					}
-					$texto = substr($texto, $i, $caracteres);
-					$texto .= '...';
 				}
+				else
+				{
+					$i = 0;
+				}
+				$texto = substr($texto, $i, $caracteres);
+				$texto .= '...';
 			}
 			return $texto;
 		}

@@ -14,8 +14,7 @@
 		private $model_relational;
 		private $index;
 		
-		public function __construct($model, $relation_type, $link_model, $link_external_model = null
-				, $order = null, $model_relational = null, $index = null)
+		public function __construct($model, $relation_type, $link_model, $link_external_model = null, $order = null, $model_relational = null, $index = null)
 		{
 			$this->model = $model;
 			$this->link_model = $link_model;

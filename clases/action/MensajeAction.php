@@ -24,7 +24,7 @@
 		public function mensajes_recibidos_usuario()
 		{
 			/*
-			Usamos un objeto de la clase Usuario intermediario para evitar que los mensajes se guarden en sesi髇
+			Usamos un objeto de la clase Usuario intermediario para evitar que los mensajes se guarden en sesi贸n
 			*/
 			$usuario = new Usuario;
 			$usuario->id_usuario = $_SESSION['usuario']->id_usuario;
@@ -37,7 +37,7 @@
 		public function mensajes_enviados_usuario()
 		{
 			/*
-			Usamos un objeto de la clase Usuario intermediario para evitar que los mensajes se guarden en sesi髇
+			Usamos un objeto de la clase Usuario intermediario para evitar que los mensajes se guarden en sesi贸n
 			*/
 			$usuario = new Usuario;
 			$usuario->id_usuario = $_SESSION['usuario']->id_usuario;
@@ -55,7 +55,7 @@
 			$mensaje = $this->mensajeService->findById($_GET['id_mensaje']);
 			if (!$mensaje)
 				return 'error';
-			//comprueba si el mensaje pertenece al usuario de la sesi髇
+			//comprueba si el mensaje pertenece al usuario de la sesi贸n
 			if ($mensaje->usuario_destino->id_usuario != $_SESSION['usuario']->id_usuario 
 					and $mensaje->usuario_envia->id_usuario != $_SESSION['usuario']->id_usuario)
 				return 'error';
@@ -68,7 +68,7 @@
 		{
 			$this->mensaje = new Mensaje;
 			/*
-			Usamos un objeto de la clase Usuario intermediario para evitar que los contactos se guarden en sesi髇
+			Usamos un objeto de la clase Usuario intermediario para evitar que los contactos se guarden en sesi贸n
 			*/
 			$this->usuario = new Usuario;
 			$this->usuario->id_usuario = $_SESSION['usuario']->id_usuario;
@@ -82,7 +82,7 @@
 			$this->mensaje = new Mensaje($_POST);
 			$this->mensaje->id_mensaje = uniqid();
 			$this->mensaje->usuario_envia = $_SESSION['usuario'];
-			//TODO Usamos un objeto de la clase Usuario intermediario para evitar que los contactos se guarden en sesi髇
+			//TODO Usamos un objeto de la clase Usuario intermediario para evitar que los contactos se guarden en sesi贸n
 			$this->usuario = new Usuario;
 			$this->usuario->id_usuario = $_SESSION['usuario']->id_usuario;
 			if ($this->usuario->contactos === false)

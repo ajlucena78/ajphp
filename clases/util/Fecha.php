@@ -3,20 +3,20 @@
 	{
 		public static function convierte_BBDD_a_web($fecha)
 		{
-			$tiempo = time() - strtotime($fecha);
+			$tiempo = mktime() - strtotime($fecha);
 			$res = 'Hace ';
 			if ($tiempo < 60)
 				$res .= 'menos de un minuto';
 			elseif ($tiempo < 3600)
 				$res .= 'menos de una hora';
 			elseif ($tiempo < 86400)
-				$res .= 'menos de un día';
+				$res .= 'menos de un dÃ­a';
 			elseif ($tiempo < 604800)
 				$res .= 'menos de una semana';
 			elseif ($tiempo < 2592000)
 				$res .= 'menos de un mes';
 			elseif ($tiempo < 31104000)
-				$res .= 'menos de un año';
+				$res .= 'menos de un aÃ±o';
 			else
 				$res .= 'mucho tiempo';
 			return formato_html($res);

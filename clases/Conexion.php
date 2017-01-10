@@ -23,7 +23,7 @@
 			}
 			catch (PDOException $e)
 			{
-				$this->error = 'Fallo en la conexión ' . $dsn . ': ' . $e->getMessage();
+				$this->error = 'Fallo en la conexiÃ³n ' . $dsn . ': ' . $e->getMessage();
 				return false;
 			}
 		}
@@ -37,7 +37,7 @@
 		{
 			$res = $this->conexion->exec($sql);
 			if ($res === false)
-				$this->error = 'Error en la ejecución de la consulta ' . $sql . ': ' . $this->msj_error();
+				$this->error = 'Error en la ejecuciÃ³n de la consulta ' . $sql . ': ' . $this->msj_error();
 			return $res;
 		}
 		

@@ -45,11 +45,20 @@
 			}
 		}
 		
-		private function get($atributo, $id = null, $limite = null, $inicio = null, $soloId = null)
+		private function get($atributo, $id = null, $limite = null, $inicio = null, $soloId = null
+				, $total = false, $criterios = null)
 		{
-			if ($this->$atributo === null and isset($this->fk[$atributo]))
+			if (($this->$atributo === null or $total) and isset($this->fk[$atributo]))
 			{
-				$this->cargaRef($atributo, $limite, $inicio, $soloId);
+				$res = $this->cargaRef($atributo, $limite, $inicio, $soloId, $total, $criterios);
+				if ($res === false)
+				{
+					return false;
+				}
+			}
+			if ($total)
+			{
+				return $res;
 			}
 			if ($id !== null)
 			{
@@ -90,12 +99,20 @@
 	    	if (isset($parametros[2]) and $parametros[2] !== null)
 	    		$inicio = $parametros[2];
 	    	else
-	    		$inicio = null;
+	    		$inicio = 0;
 	    	if (isset($parametros[3]) and $parametros[3] === true)
 	    		$soloId = true;
 	    	else
 	    		$soloId = null;
-	    	return $this->get($atributo, $id, $limite, $inicio, $soloId);
+	    	if (isset($parametros[4]) and $parametros[4] === true)
+	    		$total = true;
+	    	else
+	    		$total = false;
+	    	if (isset($parametros[5]) and $parametros[5] !== null)
+	    		$criterios = $parametros[5];
+	    	else
+	    		$criterios = null;
+	    	return $this->get($atributo, $id, $limite, $inicio, $soloId, $total, $criterios);
 	    }
 		
 		protected function load()
@@ -110,9 +127,10 @@
 			}
 		}
 		
-		protected function cargaRef($propiedad, $limite = null, $inicio = null, $soloId = null)
+		protected function cargaRef($propiedad, $limite = null, $inicio = null, $soloId = null, $total = false, 
+				$criterios = null)
 		{
-			if ($this->$propiedad !== null)
+			if ($this->$propiedad !== null and !$total)
 			{
 				return null;
 			}
@@ -120,10 +138,14 @@
 			{
 				return false;
 			}
-			$elementos = Service::cargaRef($this, $propiedad, $limite, $inicio, $soloId);
+			$elementos = Service::cargaRef($this, $propiedad, $limite, $inicio, $soloId, $total, $criterios);
 			if ($elementos === false)
 			{
 				return false;
+			}
+			if ($total)
+			{
+				return ($elementos);
 			}
 			if ($this->fk[$propiedad]->relation_type() == ManyToOne)
 			{

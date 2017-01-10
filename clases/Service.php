@@ -1,14 +1,14 @@
 <?php
 	require_once 'Conexion.php';
 	
-	class Service
+	abstract class Service
 	{
 		protected static $conexion;
 		private $model;
 		protected $error;
 		protected $transaccion;
 		
-		public function Service()
+		public function __construct()
 		{
 			if (!self::$conexion)
 			{
@@ -22,7 +22,7 @@
 			}
 			if (get_class($this) != 'Service')
 			{
-				require_once(APP_ROOT . '/clases/model/' . str_replace('Service', '', get_class($this)) . '.php');
+				require_once(APP_ROOT . 'clases/model/' . str_replace('Service', '', get_class($this)) . '.php');
 				$clase = str_replace('Service', '', get_class($this));
 				$this->model = new $clase();
 			}
@@ -65,7 +65,8 @@
 			return $this->error;
 		}
 		
-		public static function cargaRef(Model $model, $propiedad, $limite = null, $inicio = 0, $soloId = null)
+		public static function cargaRef(Model $model, $propiedad, $limite = null, $inicio = 0, $soloId = null
+				, $total = false, $criterios = null)
 		{
 			foreach ($model->pk as $pk => $tipo);
 				$id = $model->$pk;
@@ -80,35 +81,51 @@
 			}
 			$index = $fk->index();
 			$indexPK = null;
-			if ($soloId and $index)
+			if ($total or ($soloId and $index))
 			{
-				$sql = 'select ';
-				if (is_array($index) and count($index) > 0)
+				if ($total)
 				{
-					$cont = 0;
-					foreach ($index as $ind)
-					{
-						if ($cont++)
-							$sql .= ', ';
-						$sql .= $ind;
-					}
+					$sql = 'select count(*) as total ';
 				}
 				else
-					$sql .= $index;
-				if ($indexPK)
-					$sql .= ', ' . $indexPK;
+				{
+					$sql = 'select ';
+					if (is_array($index) and count($index) > 0)
+					{
+						$cont = 0;
+						foreach ($index as $ind)
+						{
+							if ($cont++)
+								$sql .= ', ';
+							$sql .= $ind;
+						}
+					}
+					else
+						$sql .= $index;
+					if ($indexPK)
+						$sql .= ', ' . $indexPK;
+				}
 				$fkModel = $fk->model();
 				require_once 'clases/model/' . $fkModel . '.php';
 				if ($fk->relation_type() == ManyToMany)
 				{
 					$sql .= ' from ' . $fk->model_relational() . ' model';
-					Service::sql_clase_padre($sql, new $fkModel());
-					$sql .= ' where ' . $fk->link_model() .' = \'' . $id . '\'';
 				}
 				else
 				{
-					$sql .= ' from ' . $fk->model() . ' model where ' . $fk->link_model() . ' = \'' . $id . '\'';
+					$sql .= ' from ' . $fk->model() . ' model';
+				}
+				if (!$total)
+				{
 					Service::sql_clase_padre($sql, new $fkModel());
+				}
+				$sql .= ' where ' . $fk->link_model() .' = \'' . $id . '\'';
+				if ($criterios !== null and is_array($criterios))
+				{
+					foreach ($criterios as $criterio => $valor)
+					{
+						$sql .= ' and ' . $criterio . ' = \'' . $valor . '\'';
+					}
 				}
 			}
 			else
@@ -159,6 +176,13 @@
 					$sql .= ' join ' . $nombreModel . ' d2 on (d2.' . $fk->link_model() . ' = model.' 
 							. $pk2 . ' and d2.' . $pk . ' = \'' . $id . '\')';
 				}
+				if ($criterios !== null and is_array($criterios))
+				{
+					foreach ($criterios as $criterio => $valor)
+					{
+						$sql .= ', ' . $criterio = '\'' . $valor . '\'';
+					}
+				}
 				if ($fk->order())
 				{
 					$sql .= ' order by ';
@@ -194,50 +218,58 @@
 			{
 				return false;
 			}
-			$registros = array();
-			if ($soloId and $index)
+			if ($total)
 			{
-				if (!$indexPK)
-					$indexPK = $index;
-				while ($registro = $consulta->lee_registro())
-				{
-					if (is_array($index) and count($index) > 0)
-					{
-						//para cada elemento del array 'index' se crea una dimensi髇 en los valores devueltos
-						$orden = '$registros';
-						foreach ($index as $ind)
-							$orden .= '[$registro[\'' . $ind . '\']]';
-						$orden .= ' = $registro[\'' . $ind . '\'];';
-						eval ($orden);
-					}
-					else
-						$registros[$registro[$index]] = $registro[$indexPK];
-				}
+				$registros = $consulta->lee_registro();
+				$registros = $registros['total'];
 			}
 			else
 			{
-				$fk_model = $fk->model();
-				require_once(APP_ROOT . '/clases/model/' . $fk_model . '.php');
-				while ($registro = $consulta->lee_registro())
+				$registros = array();
+				if ($soloId and $index)
 				{
-					if ($index)
+					if (!$indexPK)
+						$indexPK = $index;
+					while ($registro = $consulta->lee_registro())
 					{
 						if (is_array($index) and count($index) > 0)
 						{
-							//Para cada elemento del array 'index' se crea una dimensi髇 en los valores devueltos
+							//para cada elemento del array 'index' se crea una dimensi贸n en los valores devueltos
 							$orden = '$registros';
 							foreach ($index as $ind)
 								$orden .= '[$registro[\'' . $ind . '\']]';
-							$orden .= ' = new $fk_model($registro);';
+							$orden .= ' = $registro[\'' . $ind . '\'];';
 							eval ($orden);
 						}
 						else
-						{
-							$registros[$registro[$index]] = new $fk_model($registro);
-						}
+							$registros[$registro[$index]] = $registro[$indexPK];
 					}
-					else
-						$registros[] = new $fk_model($registro);
+				}
+				else
+				{
+					$fk_model = $fk->model();
+					require_once(APP_ROOT . '/clases/model/' . $fk_model . '.php');
+					while ($registro = $consulta->lee_registro())
+					{
+						if ($index)
+						{
+							if (is_array($index) and count($index) > 0)
+							{
+								//Para cada elemento del array 'index' se crea una dimensi贸n en los valores devueltos
+								$orden = '$registros';
+								foreach ($index as $ind)
+									$orden .= '[$registro[\'' . $ind . '\']]';
+								$orden .= ' = new $fk_model($registro);';
+								eval ($orden);
+							}
+							else
+							{
+								$registros[$registro[$index]] = new $fk_model($registro);
+							}
+						}
+						else
+							$registros[] = new $fk_model($registro);
+					}
 				}
 			}
 			$consulta->libera();
@@ -286,8 +318,7 @@
 			return $registros;
 		}
 		
-		public function find(Model $model, $max = null, $order = null, $likes = null, $excludes = null
-				, $total = false, $inicio = 0, $listaId = null)
+		public function find(Model $model, $max = null, $order = null, $likes = null, $excludes = null, $total = false, $inicio = 0, $listaId = null)
 		{
 			if ($total)
 				$sql = 'select count(*) as total';
@@ -537,7 +568,7 @@
 			}
 			else
 			{
-				//actualizaci髇 de registro
+				//actualizaci贸n de registro
 				$sql = 'update ' . get_class($model) . ' set ';
 				$cont = 0;
 				foreach ($model->propiedades_clase() as $nombre)
@@ -639,9 +670,14 @@
 				$this->error = $consulta->error();
 				return false;
 			}
-			$id = null;
 			if ($registro = $consulta->lee_registro())
+			{
 				$id = $registro['id'];
+			}
+			else
+			{
+				$id = null;
+			}
 			return $id;
 		}
 		
@@ -700,14 +736,14 @@
 		{
 			if (!$fk = $model->fk($relacion))
 			{
-				$this->error = 'La relaci髇 ' . $relacion . ' no existe';
+				$this->error = 'La relaci贸n ' . $relacion . ' no existe';
 				return false;
 			}
 			foreach ($model->pk() as $pk => $tipo);
 			$id = $model->$pk;
 			if (!$id)
 			{
-				$this->error = 'No se puede guardar la relaci髇 con ' . $relacion . ' porque el ID no consta';
+				$this->error = 'No se puede guardar la relaci贸n con ' . $relacion . ' porque el ID no consta';
 				return false;
 			}
 			if (!is_array($model->$relacion) or count($model->$relacion) == 0)

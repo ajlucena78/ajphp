@@ -14,7 +14,7 @@
 		private $url_view;
 		private $host_app;
 		
-		public function Config()
+		public function __construct()
 		{
 			//url relativa al proyecto
 			$pathInfo = pathinfo($_SERVER['SCRIPT_NAME']);
@@ -23,15 +23,15 @@
 			else
 				$urlApp = $pathInfo['dirname'];
 			$this->url_app = $urlApp . '/';
-			//dirección del dominio del proyecto
+			//direcciÃ³n del dominio del proyecto
 			if (isset($_SERVER['HTTP_HOST']))
 			{
 				$this->host_app = 'http://' . $_SERVER['HTTP_HOST'];
 			}
-			//carga de los ficheros de configuración y mapa de acciones
+			//carga de los ficheros de configuraciÃ³n y mapa de acciones
 			$xml = $this->carga_xml('context.xml.php');
 			$this->app_name = strval(utf8_decode($xml->appname));
-			//conexión a la base de datos
+			//conexiÃ³n a la base de datos
 			$this->db_url = '' . $xml->db->url->attributes();
 			$this->db_username = '' . $xml->db->username->attributes();
 			$this->db_password = '' . $xml->db->password->attributes();
@@ -46,9 +46,8 @@
 				foreach ($action->children() as $service)
 					$this->actions['' . $action['id']]['services'][] = '' . $service['ref'];
 			}
-			if ($_SESSION['navegador'] == 'movil')
+			if (isset($_SESSION['navegador']) and $_SESSION['navegador'] == 'movil')
 			{
-				//$viewPath = '/movil';
 				$viewPath = '';
 				$xml = $this->carga_xml('packages_movil.xml.php');
 			}
@@ -81,8 +80,10 @@
 					foreach ($action as $result)
 					{
 						$atributos2 = $result->attributes();
-						$this->actionPackages['' . $atributos['name']]['results']['' . $atributos2['name']] = '' 
-								. $result[0];
+						$this->actionPackages['' . $atributos['name']]['results']['' . $atributos2['name']] = Array();
+						$this->actionPackages['' . $atributos['name']]['results']['' . $atributos2['name']]['ruta'] = '' . $result[0];
+						if (isset($atributos2['frame']))
+							$this->actionPackages['' . $atributos['name']]['results']['' . $atributos2['name']]['frame'] = '' . $atributos2['frame'];
 					}
 				}
 			}
@@ -95,7 +96,7 @@
 					$this->frames['' . $frame['id']] = '' . $frame[0];
 				}
 			}
-			//ruta física al directorio de las vistas view 
+			//ruta fÃ­sica al directorio de las vistas view 
 			$this->path_view = $_SERVER['DOCUMENT_ROOT'] . $urlApp . '/view' . $viewPath . '/';
 			//url relativa al directorio de las vistas view
 			$this->url_view = $urlApp . '/view' . $viewPath . '/';
