@@ -30,7 +30,7 @@
 			}
 			//carga de los ficheros de configuración y mapa de acciones
 			$xml = $this->carga_xml('context.xml.php');
-			$this->app_name = strval(utf8_decode($xml->appname));
+			$this->app_name = strval($xml->appname);
 			//conexión a la base de datos
 			$this->db_url = '' . $xml->db->url->attributes();
 			$this->db_username = '' . $xml->db->username->attributes();
@@ -87,7 +87,7 @@
 					}
 				}
 			}
-			if (file_exists(APP_ROOT . '/config/frames.xml.php'))
+			if (file_exists(APP_ROOT . 'config/frames.xml.php'))
 			{
 				$xml = $this->carga_xml('frames.xml.php');
 				$this->frames = array();

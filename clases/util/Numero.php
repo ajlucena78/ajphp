@@ -7,6 +7,6 @@
 			if (intval($numero) == $numero)
 				$decimales = 0;
 			$numero = str_replace(',', '.', $numero);
-			return str_replace('.', ',', number_format($numero, $decimales));
+			return str_replace(',', '.', number_format($numero, $decimales));
 		}
 	}

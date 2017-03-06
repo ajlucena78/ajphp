@@ -101,7 +101,7 @@
 	
 	function formato_texto($html)
 	{
-		return html_entity_decode($html);
+		return html_entity_decode($html, ENT_XHTML);
 	}
 	
 	function es_letra_o_numero($caracter)

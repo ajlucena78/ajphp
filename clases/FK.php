@@ -13,19 +13,26 @@
 		private $order;
 		private $model_relational;
 		private $index;
+		private $valor;
 		
-		public function __construct($model, $relation_type, $link_model, $link_external_model = null, $order = null, $model_relational = null, $index = null)
+		public function __construct($model, $relation_type, $link_model, $link_external_model = null
+				, $order = null, $model_relational = null, $index = null, $valor = false)
 		{
 			$this->model = $model;
 			$this->link_model = $link_model;
 			if ($link_external_model)
+			{
 				$this->link_external_model = $link_external_model;
+			}
 			else
+			{
 				$this->link_external_model = $link_model;
+			}
 			$this->relation_type = $relation_type;
 			$this->order = $order;
 			$this->model_relational = $model_relational;
 			$this->index = $index;
+			$this->valor = $valor;
 		}
 		
 		public function model()
@@ -61,5 +68,10 @@
 		public function index()
 		{
 			return $this->index;
+		}
+		
+		public function valor()
+		{
+			return $this->valor;
 		}
 	}

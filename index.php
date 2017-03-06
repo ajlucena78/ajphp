@@ -4,6 +4,8 @@
 	require_once 'clases/Action.php';
 	require_once 'clases/Model.php';
 	require_once 'clases/Service.php';
+	require_once 'clases/util/Movil.php';
+	
 	if (isset($argv[1]) and $argv[1])
 	{
 		$_GET['action'] = $argv[1];
@@ -17,7 +19,6 @@
 	include 'conf.php';
 	session_start();
 	//redirige a la version movil si es un navegador de estos
-	require_once 'clases/util/Movil.php';
 	if (isset($_SERVER['HTTP_USER_AGENT']) and Movil::es_navegador_movil())
 	{
 		$_SESSION['navegador'] = 'movil';
@@ -123,6 +124,11 @@
 			}
 			header('Location:' . $action);
 		}
+	}
+	elseif ($view and isset($actionPackage[$view]))
+	{
+		//se llama directamente a un action concreto con el nombre del resultado devuelto
+		header('Location:' . URL_APP . $view);
 	}
 	elseif (isset($_SESSION['HTTP_REFERER']) and $_SESSION['HTTP_REFERER'])
 	{

@@ -69,7 +69,9 @@
 					return null;
 			}
 			else
+			{
 				return $this->$atributo;
+			}
 		}
 		
 		public function __get($atributo)
@@ -85,13 +87,21 @@
 	    public function __call($atributo, $parametros)
 	    {
 	    	if (!$atributo)
+	    	{
 	    		return false;
+	    	}
 	    	if (method_exists($this, $atributo))
+	    	{
 	    		return $this->$atributo();
+	    	}
 	    	if (isset($parametros[0]) and $parametros[0] !== null)
+	    	{
 	    		$id = $parametros[0];
+	    	}
 	    	else
+	    	{
 	    		$id = null;
+	    	}
 	    	if (isset($parametros[1]) and $parametros[1] !== null)
 	    		$limite = $parametros[1];
 	    	else

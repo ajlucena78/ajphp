@@ -65,11 +65,11 @@
 			return $this->error;
 		}
 		
-		public static function cargaRef(Model $model, $propiedad, $limite = null, $inicio = 0, $soloId = null
+		public static function cargaRef(Model $model, $propiedad, $limite = null, $inicio = 0, $soloId = false
 				, $total = false, $criterios = null)
 		{
 			foreach ($model->pk as $pk => $tipo);
-				$id = $model->$pk;
+			$id = $model->$pk;
 			if (!$id)
 			{
 				return array();
@@ -81,6 +81,10 @@
 			}
 			$index = $fk->index();
 			$indexPK = null;
+			if ($fk->valor())
+			{
+				$soloId = true;
+			}
 			if ($total or ($soloId and $index))
 			{
 				if ($total)
@@ -229,7 +233,9 @@
 				if ($soloId and $index)
 				{
 					if (!$indexPK)
+					{
 						$indexPK = $index;
+					}
 					while ($registro = $consulta->lee_registro())
 					{
 						if (is_array($index) and count($index) > 0)
@@ -237,25 +243,30 @@
 							//para cada elemento del array 'index' se crea una dimensión en los valores devueltos
 							$orden = '$registros';
 							foreach ($index as $ind)
+							{
 								$orden .= '[$registro[\'' . $ind . '\']]';
+							}
 							$orden .= ' = $registro[\'' . $ind . '\'];';
 							eval ($orden);
 						}
 						else
+						{
 							$registros[$registro[$index]] = $registro[$indexPK];
+						}
 					}
 				}
 				else
 				{
 					$fk_model = $fk->model();
-					require_once(APP_ROOT . '/clases/model/' . $fk_model . '.php');
+					require_once(APP_ROOT . 'clases/model/' . $fk_model . '.php');
 					while ($registro = $consulta->lee_registro())
 					{
 						if ($index)
 						{
 							if (is_array($index) and count($index) > 0)
 							{
-								//Para cada elemento del array 'index' se crea una dimensión en los valores devueltos
+								//Para cada elemento del array 'index' se crea una dimensión en los valores 
+								//devueltos
 								$orden = '$registros';
 								foreach ($index as $ind)
 									$orden .= '[$registro[\'' . $ind . '\']]';
@@ -268,7 +279,9 @@
 							}
 						}
 						else
+						{
 							$registros[] = new $fk_model($registro);
+						}
 					}
 				}
 			}
@@ -702,7 +715,9 @@
 			}
 			$model = null;
 			if ($registro = $consulta->lee_registro())
+			{
 				$model = new $clase($registro);
+			}
 			$consulta->libera();
 			return $model;
 		}

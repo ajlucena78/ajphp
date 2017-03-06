@@ -3,7 +3,7 @@
 	{
 		public static function convierte_BBDD_a_web($fecha)
 		{
-			$tiempo = mktime() - strtotime($fecha);
+			$tiempo = time() - strtotime($fecha);
 			$res = 'Hace ';
 			if ($tiempo < 60)
 				$res .= 'menos de un minuto';
