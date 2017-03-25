@@ -19,9 +19,13 @@
 			//url relativa al proyecto
 			$pathInfo = pathinfo($_SERVER['SCRIPT_NAME']);
 			if ($pathInfo['dirname'] == '/' or $pathInfo['dirname'] == '\\')
+			{
 				$urlApp = '';
+			}
 			else
+			{
 				$urlApp = $pathInfo['dirname'];
+			}
 			$this->url_app = $urlApp . '/';
 			//dirección del dominio del proyecto
 			if (isset($_SERVER['HTTP_HOST']))
@@ -37,14 +41,18 @@
 			$this->db_password = '' . $xml->db->password->attributes();
 			$this->services = array();
 			foreach ($xml->service as $service)
+			{
 				$this->services['' . $service['id']] = '' . $service['class'];
+			}
 			$this->actions = array();
 			foreach ($xml->action as $action)
 			{
 				$this->actions['' . $action['id']]['class'] = '' . $action['class'];
 				$this->actions['' . $action['id']]['services'] = array();
 				foreach ($action->children() as $service)
+				{
 					$this->actions['' . $action['id']]['services'][] = '' . $service['ref'];
+				}
 			}
 			if (isset($_SESSION['navegador']) and $_SESSION['navegador'] == 'movil')
 			{
@@ -80,10 +88,15 @@
 					foreach ($action as $result)
 					{
 						$atributos2 = $result->attributes();
-						$this->actionPackages['' . $atributos['name']]['results']['' . $atributos2['name']] = Array();
-						$this->actionPackages['' . $atributos['name']]['results']['' . $atributos2['name']]['ruta'] = '' . $result[0];
+						$this->actionPackages['' . $atributos['name']]['results']['' 
+								. $atributos2['name']] = Array();
+						$this->actionPackages['' . $atributos['name']]['results']['' 
+								. $atributos2['name']]['ruta'] = '' . $result[0];
 						if (isset($atributos2['frame']))
-							$this->actionPackages['' . $atributos['name']]['results']['' . $atributos2['name']]['frame'] = '' . $atributos2['frame'];
+						{
+							$this->actionPackages['' . $atributos['name']]['results']['' 
+									. $atributos2['name']]['frame'] = '' . $atributos2['frame'];
+						}
 					}
 				}
 			}
@@ -116,29 +129,39 @@
 		public function service($service)
 		{
 			if (isset($this->services[$service]))
+			{
 				return $this->services[$service];
+			}
 			return null;
 		}
 		
 		public function action($action)
 		{
 			if (isset($this->actions[$action]))
+			{
 				return $this->actions[$action];
+			}
 			return null;
 		}
 		
 		public function action_by_class($class)
 		{
 			foreach ($this->actions as $action => $classAction)
+			{
 				if ($classAction = $class)
+				{
 					return $this->actions[$action];
+				}
+			}
 			return null;
 		}
 		
 		public function actionPackage($actionPackage)
 		{
 			if (isset($this->actionPackages[$actionPackage]))
+			{
 				return $this->actionPackages[$actionPackage];
+			}
 			return null;
 		}
 		
@@ -146,16 +169,22 @@
 		{
 			$pathInfo = pathinfo($_SERVER['SCRIPT_NAME']);
 			if ($pathInfo['dirname'] == '/' or $pathInfo['dirname'] == '\\')
+			{
 				$urlApp = '';
+			}
 			else
+			{
 				$urlApp = $pathInfo['dirname'];
+			}
 			return $_SERVER['DOCUMENT_ROOT'] . $urlApp;
 		}
 		
 		public function frame($frame)
 		{
 			if (isset($this->frames[$frame]))
+			{
 				return $this->frames[$frame];
+			}
 			return null;
 		}
 		

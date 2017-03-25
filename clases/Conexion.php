@@ -10,7 +10,9 @@
 		{
 			$datos = $this->conexion->errorInfo();
 			if (!isset($datos[2]))
+			{
 				return null;
+			}
 			return $datos[2];
 		}
 		
@@ -37,7 +39,9 @@
 		{
 			$res = $this->conexion->exec($sql);
 			if ($res === false)
+			{
 				$this->error = 'Error en la ejecución de la consulta ' . $sql . ': ' . $this->msj_error();
+			}
 			return $res;
 		}
 		

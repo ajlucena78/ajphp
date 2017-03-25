@@ -9,14 +9,18 @@
 		public function __construct($conexion)
 		{
 			if (!self::$conexion)
+			{
 				self::$conexion = $conexion;
+			}
 		}
 		
 		private function msj_error()
 		{
 			$datos = $this->consulta->errorInfo();
 			if (!isset($datos[2]))
+			{
 				return null;
+			}
 			return $datos[2];
 		}
 		

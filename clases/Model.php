@@ -18,10 +18,14 @@
 			{
 				if ($propiedad == 'propiedades' or $propiedad == 'propiedades_clase' or $propiedad == 'pk' 
 						or $propiedad == 'fk')
+				{
 					continue;
+				}
 				$this->propiedades[$propiedad] = $propiedad;
 				if (isset($datos) and is_array($datos) and isset($datos[$propiedad]))
+				{
 					$this->$propiedad = $datos[$propiedad];
+				}
 			}
 			//propiedades de la clase hija, sin tener en cuenta la del padre si hay herencia
 			$clasePadre = get_parent_class($this);
@@ -30,13 +34,17 @@
 				$propiedades = get_class_vars($clasePadre);
 				$propiedadesPadre = array();
 				foreach ($propiedades as $propiedad => $valor)
+				{
 					$propiedadesPadre[$propiedad] = 1;
+				}
 				$objClasePadre = new $clasePadre();
 				$this->propiedades_clase = array();
 				foreach ($this->propiedades as $propiedad)
 				{
 					if (!isset($propiedadesPadre[$propiedad]) or $objClasePadre->pk($propiedad))
+					{
 						$this->propiedades_clase[$propiedad] = $propiedad;
+					}
 				}
 			}
 			else
@@ -64,9 +72,13 @@
 			{
 				$info = $this->$atributo;
 				if (isset($info[$id]))
+				{
 					return $info[$id];
+				}
 				else
+				{
 					return null;
+				}
 			}
 			else
 			{
@@ -103,25 +115,45 @@
 	    		$id = null;
 	    	}
 	    	if (isset($parametros[1]) and $parametros[1] !== null)
+	    	{
 	    		$limite = $parametros[1];
+	    	}
 	    	else
+	    	{
 	    		$limite = null;
+	    	}
 	    	if (isset($parametros[2]) and $parametros[2] !== null)
+	    	{
 	    		$inicio = $parametros[2];
+	    	}
 	    	else
+	    	{
 	    		$inicio = 0;
+	    	}
 	    	if (isset($parametros[3]) and $parametros[3] === true)
+	    	{
 	    		$soloId = true;
+	    	}
 	    	else
+	    	{
 	    		$soloId = null;
+	    	}
 	    	if (isset($parametros[4]) and $parametros[4] === true)
+	    	{
 	    		$total = true;
+	    	}
 	    	else
+	    	{
 	    		$total = false;
+	    	}
 	    	if (isset($parametros[5]) and $parametros[5] !== null)
+	    	{
 	    		$criterios = $parametros[5];
+	    	}
 	    	else
+	    	{
 	    		$criterios = null;
+	    	}
 	    	return $this->get($atributo, $id, $limite, $inicio, $soloId, $total, $criterios);
 	    }
 		
@@ -131,14 +163,17 @@
 			{
 				if (strtolower($fk->relation_type()) != OneToOne 
 						and strtolower($fk->relation_type()) != ManyToOne)
+				{
 					continue;
+				}
 				if (!$this->cargaRef($propiedad))
+				{
 					return false;
+				}
 			}
 		}
 		
-		protected function cargaRef($propiedad, $limite = null, $inicio = null, $soloId = null, $total = false, 
-				$criterios = null)
+		protected function cargaRef($propiedad, $limite = null, $inicio = null, $soloId = null, $total = false, $criterios = null)
 		{
 			if ($this->$propiedad !== null and !$total)
 			{
@@ -160,9 +195,13 @@
 			if ($this->fk[$propiedad]->relation_type() == ManyToOne)
 			{
 				if (isset($elementos[0]))
+				{
 					$elementos = $elementos[0];
+				}
 				else
+				{
 					$elementos = array();
+				}
 			}
 			$this->$propiedad = $elementos;
 			return true;
@@ -178,29 +217,43 @@
 			if ($id)
 			{
 				if (isset($this->propiedades_clase[$id]))
+				{
 					return $this->propiedades_clase[$id];
+				}
 				else
+				{
 					return null;
+				}
 			}
 			else
+			{
 				return $this->propiedades_clase;
+			}
 		}
 		
 		public function pk($pk = null)
 		{
 			if (!$pk)
+			{
 				return $this->pk;
+			}
 			if (isset($this->pk[$pk]))
+			{
 				return $this->pk[$pk];
+			}
 			return null;
 		}
 		
 		public function fk($fk = null)
 		{
 			if (!$fk)
+			{
 				return $this->fk;
+			}
 			if (isset($this->fk[$fk]))
+			{
 				return $this->fk[$fk];
+			}
 			return null;
 		}
 		

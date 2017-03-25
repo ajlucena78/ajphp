@@ -2,9 +2,13 @@
 	function link_action($action, $params = null, $sinFormato = false, $ruta = true)
 	{
 		if ($sinFormato)
+		{
 			$amp = '&';
+		}
 		else
+		{
 			$amp = '&amp;';
+		}
 		if ($params and is_array($params))
 		{
 			$numParams = count($params);
@@ -16,26 +20,38 @@
 				{
 					$action .= $nombre . '=' . $valor;
 					if ($cont++ < $numParams)
+					{
 						$action .= $amp;
+					}
 				}
 			}
 		}
 		if ($ruta)
+		{
 			return URL_APP . $action;
+		}
 		return $action;
 	}
 	
 	function carga($action, $id = null, $params = null, $funcion = null)
 	{
 		if (!$action)
+		{
 			return false;
+		}
 		if (!$id)
+		{
 			$id = $action;
+		}
 		$action = link_action($action, $params, true);
 		if (!$funcion)
+		{
 			$funcion = 'null';
+		}
 		else
+		{
 			$funcion = "'$funcion'";
+		}
 ?>
 		<script type="text/javascript">
 			<!--
@@ -84,9 +100,13 @@
 	function carga_rotativa($action, $tiempo, $id = null)
 	{
 		if (!$action)
+		{
 			return false;
+		}
 		if (!$id)
+		{
 			$id = $action;
+		}
 ?>
 		<script type="text/javascript">
 			carga_rotativa('<?php vlink($action); ?>', <?php echo $tiempo; ?>, '<?php echo $id; ?>');
@@ -107,10 +127,16 @@
 	function es_letra_o_numero($caracter)
 	{
 		if ($caracter == '/')
+		{
 			return false;
+		}
 		if (ord($caracter) >= 97 and ord($caracter) <= 122)
+		{
 			return true;
+		}
 		if (ord($caracter) >= 48 and ord($caracter) <= 57)
+		{
 			return true;
+		}
 		return false;
 	}

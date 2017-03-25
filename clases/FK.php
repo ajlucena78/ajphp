@@ -13,10 +13,10 @@
 		private $order;
 		private $model_relational;
 		private $index;
-		private $valor;
+		private $campo;
 		
 		public function __construct($model, $relation_type, $link_model, $link_external_model = null
-				, $order = null, $model_relational = null, $index = null, $valor = false)
+				, $order = null, $model_relational = null, $index = null, $campo = false)
 		{
 			$this->model = $model;
 			$this->link_model = $link_model;
@@ -32,7 +32,7 @@
 			$this->order = $order;
 			$this->model_relational = $model_relational;
 			$this->index = $index;
-			$this->valor = $valor;
+			$this->campo = $campo;
 		}
 		
 		public function model()
@@ -70,8 +70,8 @@
 			return $this->index;
 		}
 		
-		public function valor()
+		public function campo()
 		{
-			return $this->valor;
+			return $this->campo;
 		}
 	}
