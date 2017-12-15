@@ -116,12 +116,12 @@
 	
 	function formato_html($texto)
 	{
-		return htmlentities($texto, ENT_XHTML);
+		return htmlentities($texto);
 	}
 	
 	function formato_texto($html)
 	{
-		return html_entity_decode($html, ENT_XHTML);
+		return html_entity_decode($html);
 	}
 	
 	function es_letra_o_numero($caracter)

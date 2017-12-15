@@ -3,7 +3,7 @@
 	{
 		public static function quita_acentos($cadena)
 		{
-			$cadena = htmlentities($cadena);
+			$cadena = htmlentities($cadena, ENT_COMPAT, 'UTF-8');
 			$cadena = str_replace('&aacute;', 'a', $cadena);
 			$cadena = str_replace('&eacute;', 'e', $cadena);
 			$cadena = str_replace('&iacute;', 'i', $cadena);

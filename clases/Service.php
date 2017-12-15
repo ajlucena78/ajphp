@@ -184,7 +184,7 @@
 				{
 					$sql .= ' where model.' . $fk->link_model() . ' = \'' . $id . '\'';
 				}
-				elseif ($fk->relation_type() == ManyToOne)
+				elseif ($fk->relation_type() == ManyToOne or $fk->relation_type() == OneToOne)
 				{
 					$modelExternalClass = $fk->model();
 					require_once(APP_ROOT . 'clases/model/' . $modelExternalClass . '.php');
@@ -628,8 +628,14 @@
 					{
 						continue;
 					}
+					$fk = $model->fk($nombre);
+					if ($fk and ($fk->relation_type() == ManyToMany or $fk->relation_type() == OneToMany))
+					{
+						//no se tienen en cuenta las relaciones de tipo ManyToMany y OneToMany
+						continue;
+					}
 					$valor = $model->$nombre();
-					if ($fk = $model->fk($nombre))
+					if ($fk)
 					{
 						if ($fk->relation_type() == ManyToOne or $fk->relation_type() == OneToOne)
 						{
@@ -774,7 +780,7 @@
 				}
 			}
 			//obtener el id insertado y devolverlo si es uno nuevo
-			if (!$update)
+			if (!$update and !$transaccion and !$this->transaccion)
 			{
 				if ($clasePadreModel == 'Model')
 				{
@@ -795,6 +801,11 @@
 		
 		public function last_insert_id()
 		{
+			if ($this->transaccion)
+			{
+				$this->error = 'No es posible obtener el último ID insertado dentro de una transacción';
+				return false;
+			}
 			//obtiene el id si se ha generado
 			$sql = 'select last_insert_id() as id from ' . get_class($this->model);
 			$consulta = new Consulta(self::$conexion);
@@ -898,11 +909,14 @@
 			$metodo2 = $fk->link_model();
 			foreach ($model->$relacion as $elemento)
 			{
-				//$id2 = $elemento->$metodo2;
 				$id2 = $elemento;
 				if (!$id2)
 				{
 					return false;
+				}
+				if (is_object($id2))
+				{
+					$id2 = $elemento->$metodo2;
 				}
 				if ($fk->link_model() == $pk)
 				{

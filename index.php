@@ -27,8 +27,10 @@
 		$_SESSION['navegador'] = 'desktop';
 	}
 	//se carga en sesion la configuración si no lo está ya, o bien si se ha cambiado de versión de navegador
+	/*
 	if (!isset($_SESSION['config']) or (isset($_SERVER['HTTP_USER_AGENT']) 
 			and $_SESSION['HTTP_USER_AGENT'] != $_SERVER['HTTP_USER_AGENT']))
+	*/
 	{
 		$_SESSION['config'] = new Config();
 	}
@@ -75,7 +77,8 @@
 	}
 	define('ACTION', $_GET['action']);
 	define('PACKAGE', $actionPackage['package']);
-	$view = $action->$actionPackage['method']();
+	$method = $actionPackage['method'];
+	$view = $action->$method();
 	if ($view !== null and isset($actionPackage['results'][$view]['ruta']) 
 			and $actionPackage['results'][$view]['ruta'])
 	{

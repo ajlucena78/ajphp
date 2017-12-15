@@ -173,7 +173,8 @@
 			}
 		}
 		
-		protected function cargaRef($propiedad, $limite = null, $inicio = null, $soloId = null, $total = false, $criterios = null)
+		protected function cargaRef($propiedad, $limite = null, $inicio = null, $soloId = null
+				, $total = false, $criterios = null)
 		{
 			if ($this->$propiedad !== null and !$total)
 			{
